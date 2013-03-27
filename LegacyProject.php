@@ -6,19 +6,24 @@ function directories($path = array())
    $handle = fopen($fileName,'w') or die('Can\'t open file');
    $files = array();
    $dir = opendir($path);
-   $header = array(array('Location','URL','Status','Comments'));
-   foreach($header as $columns)
-      fputcsv($handle,(array)$columns);
+   $header = array('Location','URL','Status','Comments');
+   fputcsv($handle,$columns);
    while(($file = readdir($dir))!==false){
-      if($file[0] == '.') continue;
-      $fullPath = $path.'/'.$file;
+      if($file[0] == '.' || $file[0] == '..') continue;
+      if(strtoupper(substr(php_uname(),0,3)) === 'WIN'){
+         $fullPath = $path . '\\' . $file;
+         $url = str_replace('C:\\xampp\\htdocs\\Projects\\172.17.1.36\\d$\\inetpub\\wwwroot\\isda\\','C:/xampp/htdocs/Projects/172.17.1.36/d$/inetpub/wwwroot/isda/',$fullPath);
+         $webUrl = str_replace('C:/xampp/htdocs/Projects/172.17.1.36/d$/inetpub/wwwroot/isda/','www.isda.org/',$url);
+      }
+      else if(strtoupper(substr(php_uname(),0,3)) === 'LIN'){
+         $fullPath = $path . '/' . $file;
+         $webUrl = str_replace('/var/www/html/isda/','www.isda.org',$fullPath);
+      }
+
       //echo $fullPath.'<br />';
       if(strstr($fullPath,'.aspx')){
       //if(strstr($fullPath,'.html') || strstr($fullPath,'.htm') || strstr($fullPath,'.asp') || strstr($fullPath,'.aspx')){
-         $fullDirPath = str_replace('/', '\\',$fullPath);
          //echo $fullDirPath.'<br />';
-         $separatorPath = str_replace('\\','/',$fullPath);
-         $webUrl = str_replace('C:/xampp/htdocs/Projects/172.17.1.36/d$/inetpub/wwwroot/isda/','www.isda.org/',$separatorPath);
          echo $webUrl.'<br />';
          $headers = get_headers('http://'.$webUrl);
          //foreach($urls as $url)
@@ -27,9 +32,7 @@ function directories($path = array())
          //$list = array('location' => $separatorPath,
          //              'webUrl'  => $webUrl,
          //               'status'  => 'Working');
-         $list = array(
-                     array($separatorPath,$webUrl, $headers[0])
-               );
+         $list = array($separatorPath,$webUrl, $headers[0]);
                                                                /*'request' => array(
                                                                'OK'              =>     'Working',
                                                                'serverError'     =>     'Not Working',
