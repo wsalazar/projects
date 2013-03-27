@@ -42,9 +42,7 @@ function directories($path = array())
                      )*/
          //);
          //if($headers[0] == 'HTTP/1.1 200 OK'){
-            foreach($list as $fields){
-               fputcsv($handle,(array)$fields);
-            }
+               fputcsv($handle,$list);
          //else if($headers[0] == 'HTTP/1.1 500 Internal Server Error'){
            // foreach($list as $fields){
             //   fputcsv($handle,(array)$fields);
